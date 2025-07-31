@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- Exclude shared preferences that contain sensitive data -->
+    <exclude domain="sharedpref"/>
+
+    <!-- Exclude any files that contain transaction data -->
+    <exclude domain="database" />
+    <exclude domain="file" path="transactions/"/>
+    <exclude domain="file" path="sensitive_data/"/>
+
+    <!-- Include everything else -->
+    <include domain="file" />
+</full-backup-content>

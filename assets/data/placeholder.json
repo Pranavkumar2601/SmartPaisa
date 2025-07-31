@@ -1,0 +1,25 @@
+{
+  "version": "1.0.0",
+  "app_name": "SmartPaisa",
+  "description": "SMS Transaction Tracker",
+  "placeholder_data": {
+    "sample_transactions": [
+      {
+        "id": "sample_1",
+        "amount": 250.0,
+        "merchant": "Sample Store",
+        "type": "debit",
+        "date": "2024-01-15T10:30:00Z"
+      }
+    ],
+    "sample_categories": [
+      {
+        "id": "food",
+        "name": "Food & Dining",
+        "icon": "restaurant",
+        "color": "#FF9800"
+      }
+    ]
+  },
+  "created_at": "2024-01-01T00:00:00Z"
+}

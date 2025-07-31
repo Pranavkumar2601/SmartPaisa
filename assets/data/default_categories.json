@@ -1,0 +1,278 @@
+{
+  "version": "2.0.0",
+  "created_at": "2024-01-01T00:00:00Z",
+  "description": "Default categories for SmartPaisa transaction tracking",
+  "categories": [
+    {
+      "id": "food_dining",
+      "name": "Food & Dining",
+      "description": "Restaurants, cafes, food delivery, groceries",
+      "type": "expense",
+      "icon_code": 58732,
+      "icon_name": "restaurant_rounded",
+      "color": "#FF9800",
+      "is_system": true,
+      "is_active": true,
+      "sort_order": 1,
+      "keywords": ["food", "restaurant", "cafe", "dining", "swiggy", "zomato", "dunzo", "grocery", "supermarket", "bigbasket", "grofers", "blinkit"],
+      "merchant_patterns": [
+        "swiggy", "zomato", "ubereats", "dunzo", "bigbasket", "grofers", "blinkit",
+        "dominos", "kfc", "mcdonalds", "pizzahut", "subway", "burgerking",
+        "cafe", "restaurant", "dhaba", "hotel", "canteen", "mess",
+        "reliance fresh", "dmart", "more", "spencer", "easyday"
+      ]
+    },
+    {
+      "id": "transportation",
+      "name": "Transportation",
+      "description": "Fuel, taxi, metro, bus, auto, flight tickets",
+      "type": "expense",
+      "icon_code": 57619,
+      "icon_name": "directions_car_rounded",
+      "color": "#2196F3",
+      "is_system": true,
+      "is_active": true,
+      "sort_order": 2,
+      "keywords": ["transport", "fuel", "petrol", "diesel", "taxi", "uber", "ola", "metro", "bus", "auto", "flight"],
+      "merchant_patterns": [
+        "uber", "ola", "rapido", "jugnoo", "metro", "dmrc",
+        "bpcl", "iocl", "hpcl", "reliance petrol", "shell", "essar",
+        "indigo", "spicejet", "vistara", "airindia", "goair",
+        "redbus", "abhibus", "makemytrip", "goibibo", "yatra",
+        "irctc", "trainman", "confirmtkt", "railyatri"
+      ]
+    },
+    {
+      "id": "shopping",
+      "name": "Shopping",
+      "description": "Online shopping, retail stores, clothing, electronics",
+      "type": "expense",
+      "icon_code": 59147,
+      "icon_name": "shopping_bag_rounded",
+      "color": "#9C27B0",
+      "is_system": true,
+      "is_active": true,
+      "sort_order": 3,
+      "keywords": ["shopping", "amazon", "flipkart", "myntra", "ajio", "store", "mall", "retail"],
+      "merchant_patterns": [
+        "amazon", "flipkart", "myntra", "ajio", "jabong", "koovs",
+        "nykaa", "purplle", "limeroad", "shopclues", "paytmmall",
+        "reliance trends", "westside", "lifestyle", "pantaloons",
+        "croma", "vijay sales", "poorvika", "sangeetha mobiles"
+      ]
+    },
+    {
+      "id": "entertainment",
+      "name": "Entertainment",
+      "description": "Movies, streaming, games, music, events",
+      "type": "expense",
+      "icon_code": 57404,
+      "icon_name": "movie_rounded",
+      "color": "#E91E63",
+      "is_system": true,
+      "is_active": true,
+      "sort_order": 4,
+      "keywords": ["entertainment", "movie", "cinema", "netflix", "spotify", "game", "music"],
+      "merchant_patterns": [
+        "netflix", "amazon prime", "hotstar", "zee5", "sonyliv", "voot",
+        "spotify", "gaana", "jiosaavn", "wynk", "hungama",
+        "pvr", "inox", "cinepolis", "bookmyshow", "paytm movies",
+        "steam", "google play", "app store", "pubg", "freefire"
+      ]
+    },
+    {
+      "id": "utilities",
+      "name": "Utilities",
+      "description": "Electricity, water, gas, internet, mobile bills",
+      "type": "expense",
+      "icon_code": 58297,
+      "icon_name": "electrical_services_rounded",
+      "color": "#4CAF50",
+      "is_system": true,
+      "is_active": true,
+      "sort_order": 5,
+      "keywords": ["utilities", "electricity", "water", "gas", "internet", "mobile", "bill", "recharge"],
+      "merchant_patterns": [
+        "jio", "airtel", "vi", "bsnl", "mtnl", "idea",
+        "tata power", "adani", "torrent", "cesc", "bescom",
+        "act fibernet", "airtel broadband", "jio fiber", "bsnl broadband",
+        "indane", "hp gas", "bharat gas", "ujjwala"
+      ]
+    },
+    {
+      "id": "healthcare",
+      "name": "Healthcare",
+      "description": "Medical expenses, pharmacy, hospital, insurance",
+      "type": "expense",
+      "icon_code": 59598,
+      "icon_name": "local_hospital_rounded",
+      "color": "#F44336",
+      "is_system": true,
+      "is_active": true,
+      "sort_order": 6,
+      "keywords": ["health", "medical", "doctor", "hospital", "pharmacy", "medicine", "insurance"],
+      "merchant_patterns": [
+        "apollo", "fortis", "max healthcare", "manipal", "narayana",
+        "medlife", "netmeds", "1mg", "pharmeasy", "practo",
+        "star health", "bajaj allianz", "icici lombard", "hdfc ergo"
+      ]
+    },
+    {
+      "id": "education",
+      "name": "Education",
+      "description": "School fees, courses, books, online learning",
+      "type": "expense",
+      "icon_code": 59057,
+      "icon_name": "school_rounded",
+      "color": "#FF5722",
+      "is_system": true,
+      "is_active": true,
+      "sort_order": 7,
+      "keywords": ["education", "school", "college", "course", "book", "learning", "training"],
+      "merchant_patterns": [
+        "byju", "unacademy", "vedantu", "toppr", "extramarks",
+        "coursera", "udemy", "skillshare", "khan academy",
+        "amazon kindle", "flipkart books", "crossword"
+      ]
+    },
+    {
+      "id": "financial",
+      "name": "Financial",
+      "description": "Bank charges, loans, investments, insurance",
+      "type": "expense",
+      "icon_code": 57423,
+      "icon_name": "account_balance_rounded",
+      "color": "#607D8B",
+      "is_system": true,
+      "is_active": true,
+      "sort_order": 8,
+      "keywords": ["bank", "loan", "emi", "investment", "insurance", "tax", "mutual fund"],
+      "merchant_patterns": [
+        "sbi", "hdfc bank", "icici bank", "axis bank", "kotak bank",
+        "zerodha", "groww", "kuvera", "paytm money", "upstox",
+        "lic", "sbi life", "hdfc life", "icici prudential"
+      ]
+    },
+    {
+      "id": "personal_care",
+      "name": "Personal Care",
+      "description": "Salon, spa, beauty products, grooming",
+      "type": "expense",
+      "icon_code": 59706,
+      "icon_name": "face_rounded",
+      "color": "#795548",
+      "is_system": true,
+      "is_active": true,
+      "sort_order": 9,
+      "keywords": ["beauty", "salon", "spa", "grooming", "cosmetics", "personal"],
+      "merchant_patterns": [
+        "nykaa", "purplle", "lakme", "vlcc", "naturals",
+        "jawed habib", "toni guy", "looks salon", "urban company"
+      ]
+    },
+    {
+      "id": "travel",
+      "name": "Travel",
+      "description": "Hotels, flights, vacation expenses",
+      "type": "expense",
+      "icon_code": 58652,
+      "icon_name": "flight_rounded",
+      "color": "#00BCD4",
+      "is_system": true,
+      "is_active": true,
+      "sort_order": 10,
+      "keywords": ["travel", "hotel", "flight", "vacation", "trip", "booking"],
+      "merchant_patterns": [
+        "makemytrip", "goibibo", "yatra", "cleartrip", "expedia",
+        "oyo", "treebo", "fabhotels", "zostel", "airbnb",
+        "thomas cook", "cox kings", "veena world"
+      ]
+    },
+    {
+      "id": "salary_income",
+      "name": "Salary",
+      "description": "Monthly salary, bonus, incentives",
+      "type": "income",
+      "icon_code": 57615,
+      "icon_name": "work_rounded",
+      "color": "#4CAF50",
+      "is_system": true,
+      "is_active": true,
+      "sort_order": 101,
+      "keywords": ["salary", "income", "bonus", "incentive", "wage", "pay"],
+      "merchant_patterns": [
+        "salary", "bonus", "incentive", "commission", "overtime"
+      ]
+    },
+    {
+      "id": "investment_income",
+      "name": "Investment Income",
+      "description": "Dividends, interest, capital gains",
+      "type": "income",
+      "icon_code": 59076,
+      "icon_name": "trending_up_rounded",
+      "color": "#8BC34A",
+      "is_system": true,
+      "is_active": true,
+      "sort_order": 102,
+      "keywords": ["investment", "dividend", "interest", "profit", "gain", "return"],
+      "merchant_patterns": [
+        "dividend", "interest", "profit", "capital gain", "mutual fund"
+      ]
+    },
+    {
+      "id": "freelance_income",
+      "name": "Freelance",
+      "description": "Freelance work, consulting, side projects",
+      "type": "income",
+      "icon_code": 57684,
+      "icon_name": "laptop_rounded",
+      "color": "#CDDC39",
+      "is_system": true,
+      "is_active": true,
+      "sort_order": 103,
+      "keywords": ["freelance", "consulting", "project", "contract", "gig"],
+      "merchant_patterns": [
+        "upwork", "freelancer", "fiverr", "guru", "peopleperhour"
+      ]
+    },
+    {
+      "id": "other_income",
+      "name": "Other Income",
+      "description": "Miscellaneous income sources",
+      "type": "income",
+      "icon_code": 57424,
+      "icon_name": "attach_money_rounded",
+      "color": "#FFC107",
+      "is_system": true,
+      "is_active": true,
+      "sort_order": 104,
+      "keywords": ["other", "miscellaneous", "extra", "additional"],
+      "merchant_patterns": [
+        "cashback", "refund", "gift", "prize", "reward"
+      ]
+    },
+    {
+      "id": "default_uncategorized",
+      "name": "Uncategorized",
+      "description": "Transactions not yet categorized",
+      "type": "expense",
+      "icon_code": 59505,
+      "icon_name": "help_outline_rounded",
+      "color": "#9E9E9E",
+      "is_system": true,
+      "is_active": true,
+      "sort_order": 999,
+      "keywords": ["uncategorized", "unknown", "other"],
+      "merchant_patterns": []
+    }
+  ],
+  "metadata": {
+    "total_categories": 15,
+    "expense_categories": 11,
+    "income_categories": 4,
+    "last_updated": "2024-01-01T00:00:00Z",
+    "supported_languages": ["en"],
+    "version_notes": "Enhanced categories with comprehensive merchant patterns for Indian market"
+  }
+}
