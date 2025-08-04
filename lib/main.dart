@@ -80,7 +80,25 @@ class SmartPaisaApp extends StatefulWidget {
   State<SmartPaisaApp> createState() => _SmartPaisaAppState();
 }
 
-class _SmartPaisaAppState extends State<SmartPaisaApp> with WidgetsBindingObserver {
+class _SmartPaisaAppState extends State<SmartPaisaApp>
+    with WidgetsBindingObserver {
+  // Request SMS permission only once after install
+  Future<void> requestSmsPermissionOnce() async {
+    final settings = SettingsService.instance;
+    final hasRequested = settings.getBool('sms_permission_requested', false);
+
+    if (!hasRequested) {
+      var status = await Permission.sms.status;
+      if (!status.isGranted) {
+        status = await Permission.sms.request();
+        if (!status.isGranted) {
+          openAppSettings();
+        }
+      }
+      await settings.saveSetting('sms_permission_requested', true);
+    }
+  }
+
   bool _servicesInitialized = false;
   bool _initializationInProgress = false;
   String _initStatus = 'Starting...';
@@ -234,7 +252,10 @@ class _SmartPaisaAppState extends State<SmartPaisaApp> with WidgetsBindingObserv
   // ✅ PRODUCTION: Enhanced state saving
   Future<void> _saveAppState() async {
     try {
-      await SettingsService.instance.saveSetting('last_active_time', DateTime.now().toIso8601String());
+      await SettingsService.instance.saveSetting(
+        'last_active_time',
+        DateTime.now().toIso8601String(),
+      );
       await SettingsService.instance.saveSetting('app_version', '1.0.0');
 
       print('✅ App state saved');
@@ -259,6 +280,9 @@ class _SmartPaisaAppState extends State<SmartPaisaApp> with WidgetsBindingObserv
 
       // ✅ Step 1: Verify core services
       await _verifyAndInitializeCoreServices();
+
+      // Request SMS permission only once after install
+      await requestSmsPermissionOnce();
 
       // ✅ Step 2: Check permissions (don't request, just check)
       setState(() => _initStatus = 'Checking permissions...');
@@ -290,7 +314,6 @@ class _SmartPaisaAppState extends State<SmartPaisaApp> with WidgetsBindingObserv
 
       _servicesInitialized = true;
       print('🎉 All SmartPaisa Production Services initialized successfully');
-
     } catch (e, stackTrace) {
       print('❌ CRITICAL ERROR initializing services: $e');
       print('Stack trace: $stackTrace');
@@ -302,11 +325,12 @@ class _SmartPaisaAppState extends State<SmartPaisaApp> with WidgetsBindingObserv
       });
 
       await _attemptGracefulRecovery();
-
     } finally {
       _initializationInProgress = false;
       if (mounted) {
-        setState(() => _initStatus = _servicesInitialized ? 'Ready' : 'Error occurred');
+        setState(
+          () => _initStatus = _servicesInitialized ? 'Ready' : 'Error occurred',
+        );
       }
     }
   }
@@ -345,16 +369,22 @@ class _SmartPaisaAppState extends State<SmartPaisaApp> with WidgetsBindingObserv
       print('  💾 Storage: Not Required'); // ✅ Remove storage checking
 
       // ✅ FIXED: Only check essential permissions
-      final allPermissionsGranted = smsStatus.isGranted && notificationStatus.isGranted;
+      final allPermissionsGranted =
+          smsStatus.isGranted && notificationStatus.isGranted;
 
       if (allPermissionsGranted) {
-        await SettingsService.instance.saveSetting('permissions_verified', true);
+        await SettingsService.instance.saveSetting(
+          'permissions_verified',
+          true,
+        );
         print('✅ All essential permissions granted');
       } else {
         print('⚠️ Some permissions missing - user will see onboarding');
-        await SettingsService.instance.saveSetting('permissions_verified', false);
+        await SettingsService.instance.saveSetting(
+          'permissions_verified',
+          false,
+        );
       }
-
     } catch (e) {
       print('❌ Error checking permissions: $e');
     }
@@ -412,7 +442,8 @@ class _SmartPaisaAppState extends State<SmartPaisaApp> with WidgetsBindingObserv
   Future<void> _verifyAndRefreshData() async {
     try {
       // Check transaction count
-      final transactionCount = await StorageService.instance.getTransactionCount();
+      final transactionCount = await StorageService.instance
+          .getTransactionCount();
       print('📊 Found $transactionCount transactions in storage');
 
       // Refresh SMS data if permissions available
@@ -429,7 +460,6 @@ class _SmartPaisaAppState extends State<SmartPaisaApp> with WidgetsBindingObserv
       await _performIntegrityCheck();
 
       print('✅ Data verification completed successfully');
-
     } catch (e) {
       print('❌ Error verifying data: $e');
       // Don't throw, continue with initialization
@@ -449,7 +479,8 @@ class _SmartPaisaAppState extends State<SmartPaisaApp> with WidgetsBindingObserv
       // integrityResult is Map<String, bool>?, so we check for null and extract boolean values
       if (integrityResult != null) {
         // Since integrityResult is Map<String, bool>, access values directly
-        isIntegrityOk = (integrityResult['integrityOk'] == true) ||
+        isIntegrityOk =
+            (integrityResult['integrityOk'] == true) ||
             (integrityResult['integrity'] == true) ||
             (integrityResult['ok'] == true) ||
             (integrityResult['success'] == true);
@@ -475,7 +506,10 @@ class _SmartPaisaAppState extends State<SmartPaisaApp> with WidgetsBindingObserv
       await StorageService.instance.init();
 
       // Log the repair attempt
-      await SettingsService.instance.saveSetting('last_integrity_repair', DateTime.now().toIso8601String());
+      await SettingsService.instance.saveSetting(
+        'last_integrity_repair',
+        DateTime.now().toIso8601String(),
+      );
 
       print('✅ Database repair attempt completed');
     } catch (e) {
@@ -491,13 +525,17 @@ class _SmartPaisaAppState extends State<SmartPaisaApp> with WidgetsBindingObserv
       // Check SMS service
       if (SmsService.instance.isInitialized) {
         final smsHealth = SmsService.instance.healthCheck;
-        print('📱 SMS Service Health: ${smsHealth['overall_health'] ?? 'unknown'}');
+        print(
+          '📱 SMS Service Health: ${smsHealth['overall_health'] ?? 'unknown'}',
+        );
       }
 
       // Check storage service
       if (StorageService.instance.isInitialized) {
         final storageInfo = await StorageService.instance.getStorageInfo();
-        print('💾 Storage Service: Active with ${storageInfo['total_transactions'] ?? 0} transactions');
+        print(
+          '💾 Storage Service: Active with ${storageInfo['total_transactions'] ?? 0} transactions',
+        );
       }
 
       // Check settings service
@@ -507,7 +545,6 @@ class _SmartPaisaAppState extends State<SmartPaisaApp> with WidgetsBindingObserv
 
       print('✅ Services health check completed');
       print('📊 Service Status: $_serviceStatus');
-
     } catch (e) {
       print('❌ Service health check failed: $e');
       // Don't throw, this is just informational
@@ -535,7 +572,6 @@ class _SmartPaisaAppState extends State<SmartPaisaApp> with WidgetsBindingObserv
       await SettingsService.instance.saveSetting('recovery_mode', true);
 
       print('✅ Recovery successful - running in safe mode');
-
     } catch (e) {
       print('❌ Recovery failed: $e');
       _servicesInitialized = false;
@@ -607,7 +643,9 @@ class _SmartPaisaAppState extends State<SmartPaisaApp> with WidgetsBindingObserv
                 ),
                 const SizedBox(height: 15),
                 Text(
-                  _errorMessage.isNotEmpty ? _errorMessage : 'An unexpected error occurred during startup.',
+                  _errorMessage.isNotEmpty
+                      ? _errorMessage
+                      : 'An unexpected error occurred during startup.',
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: Color(0xFF7CB9E8),
@@ -628,7 +666,10 @@ class _SmartPaisaAppState extends State<SmartPaisaApp> with WidgetsBindingObserv
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.vibrantGreen,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 30,
+                      vertical: 15,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
@@ -674,19 +715,26 @@ class _SmartPaisaAppState extends State<SmartPaisaApp> with WidgetsBindingObserv
 
       // ✅ FIXED: Comprehensive onboarding check
       final onboardingComplete = settings.getBool('onboarding_complete', false);
-      final permissionsVerified = settings.getBool('permissions_verified', false);
+      final permissionsVerified = settings.getBool(
+        'permissions_verified',
+        false,
+      );
       final isRecoveryMode = settings.getBool('recovery_mode', false);
 
       final needsOnboarding = !onboardingComplete || !permissionsVerified;
 
-      print('🔍 Onboarding check: complete=$onboardingComplete, permissions=$permissionsVerified, recovery=$isRecoveryMode, needs=$needsOnboarding');
+      print(
+        '🔍 Onboarding check: complete=$onboardingComplete, permissions=$permissionsVerified, recovery=$isRecoveryMode, needs=$needsOnboarding',
+      );
 
       if (isRecoveryMode) {
         // Clear recovery mode flag
         settings.saveSetting('recovery_mode', false);
       }
 
-      return needsOnboarding ? const OnboardingScreen() : const DashboardScreen();
+      return needsOnboarding
+          ? const OnboardingScreen()
+          : const DashboardScreen();
     } catch (e) {
       print('❌ Error determining initial screen: $e');
       return const DashboardScreen();
@@ -702,11 +750,7 @@ class _SmartPaisaAppState extends State<SmartPaisaApp> with WidgetsBindingObserv
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF0A0E27),
-              Color(0xFF162447),
-              Color(0xFF1F4068),
-            ],
+            colors: [Color(0xFF0A0E27), Color(0xFF162447), Color(0xFF1F4068)],
           ),
         ),
         child: Center(
@@ -782,7 +826,9 @@ class _SmartPaisaAppState extends State<SmartPaisaApp> with WidgetsBindingObserv
                 width: 250,
                 child: LinearProgressIndicator(
                   backgroundColor: Colors.white.withOpacity(0.2),
-                  valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF00D2FF)),
+                  valueColor: const AlwaysStoppedAnimation<Color>(
+                    Color(0xFF00D2FF),
+                  ),
                   minHeight: 6,
                 ),
               ),
@@ -791,10 +837,7 @@ class _SmartPaisaAppState extends State<SmartPaisaApp> with WidgetsBindingObserv
               // ✅ Status text
               Text(
                 _initStatus,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Color(0xFF7CB9E8),
-                ),
+                style: const TextStyle(fontSize: 14, color: Color(0xFF7CB9E8)),
               ),
 
               // ✅ Service status indicators
@@ -805,9 +848,14 @@ class _SmartPaisaAppState extends State<SmartPaisaApp> with WidgetsBindingObserv
                   runSpacing: 8,
                   children: _serviceStatus.entries.map((entry) {
                     return Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
-                        color: entry.value ? Colors.green.withOpacity(0.2) : Colors.grey.withOpacity(0.2),
+                        color: entry.value
+                            ? Colors.green.withOpacity(0.2)
+                            : Colors.grey.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: entry.value ? Colors.green : Colors.grey,
@@ -818,7 +866,9 @@ class _SmartPaisaAppState extends State<SmartPaisaApp> with WidgetsBindingObserv
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
-                            entry.value ? Icons.check_circle : Icons.radio_button_unchecked,
+                            entry.value
+                                ? Icons.check_circle
+                                : Icons.radio_button_unchecked,
                             color: entry.value ? Colors.green : Colors.grey,
                             size: 12,
                           ),
@@ -881,10 +931,7 @@ class _SmartPaisaAppState extends State<SmartPaisaApp> with WidgetsBindingObserv
                 const Text(
                   'Don\'t worry, your financial data is completely safe!',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Color(0xFF7CB9E8),
-                    fontSize: 16,
-                  ),
+                  style: TextStyle(color: Color(0xFF7CB9E8), fontSize: 16),
                 ),
                 const SizedBox(height: 40),
                 Row(
@@ -903,7 +950,10 @@ class _SmartPaisaAppState extends State<SmartPaisaApp> with WidgetsBindingObserv
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.vibrantGreen,
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 12,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -917,7 +967,10 @@ class _SmartPaisaAppState extends State<SmartPaisaApp> with WidgetsBindingObserv
                       style: OutlinedButton.styleFrom(
                         foregroundColor: const Color(0xFFE74C3C),
                         side: const BorderSide(color: Color(0xFFE74C3C)),
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 12,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),

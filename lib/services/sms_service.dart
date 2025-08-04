@@ -49,11 +49,11 @@ class SmsService {
 
   // Stream controllers
   final StreamController<Transaction> _transactionController =
-  StreamController<Transaction>.broadcast();
+      StreamController<Transaction>.broadcast();
   final StreamController<Map<String, dynamic>> _statusController =
-  StreamController<Map<String, dynamic>>.broadcast();
+      StreamController<Map<String, dynamic>>.broadcast();
   final StreamController<String> _debugController =
-  StreamController<String>.broadcast();
+      StreamController<String>.broadcast();
 
   // Getters
   bool get isInitialized => _isInitialized;
@@ -89,7 +89,9 @@ class SmsService {
       _lastSyncTime = DateTime.now();
 
       print('✅ Enhanced SMS Service initialized successfully');
-      _debugLog('SMS Service initialized with ${_pendingTransactions.length} pending transactions');
+      _debugLog(
+        'SMS Service initialized with ${_pendingTransactions.length} pending transactions',
+      );
 
       _statusController.add({
         'status': 'initialized',
@@ -129,7 +131,10 @@ class SmsService {
         _processedSmsIds = recentIds;
       }
 
-      await _settings.setString('processed_sms_ids', _processedSmsIds.join(','));
+      await _settings.setString(
+        'processed_sms_ids',
+        _processedSmsIds.join(','),
+      );
     } catch (e) {
       print('❌ Error saving processed SMS IDs: $e');
     }
@@ -188,7 +193,7 @@ class SmsService {
       // Method 2: Periodic inbox checking for missed messages
       _inboxWatcherSubscription = Stream.periodic(
         const Duration(seconds: 30),
-            (_) => _processRecentSms(),
+        (_) => _processRecentSms(),
       ).listen((_) {});
 
       _debugLog('Real-time SMS watchers started');
@@ -223,13 +228,12 @@ class SmsService {
     final frequencyMinutes = _settings.getInt('sync_frequency_minutes', 30);
 
     _periodicSyncTimer?.cancel();
-    _periodicSyncTimer = Timer.periodic(
-      Duration(minutes: frequencyMinutes),
-          (_) {
-        _debugLog('Periodic sync triggered');
-        processHistoricalSms();
-      },
-    );
+    _periodicSyncTimer = Timer.periodic(Duration(minutes: frequencyMinutes), (
+      _,
+    ) {
+      _debugLog('Periodic sync triggered');
+      processHistoricalSms();
+    });
 
     print('🔄 Periodic sync started: every $frequencyMinutes minutes');
     _debugLog('Periodic sync scheduled every $frequencyMinutes minutes');
@@ -240,7 +244,7 @@ class SmsService {
     _backgroundSyncTimer?.cancel();
     _backgroundSyncTimer = Timer.periodic(
       const Duration(minutes: 5),
-          (_) => _processRecentSms(),
+      (_) => _processRecentSms(),
     );
 
     _debugLog('Background sync started: every 5 minutes');
@@ -304,7 +308,9 @@ class SmsService {
       // Get historical messages
       final messages = await _getHistoricalSmsMessages();
       print('📱 Found ${messages.length} historical SMS messages');
-      _debugLog('Found ${messages.length} historical SMS messages for processing');
+      _debugLog(
+        'Found ${messages.length} historical SMS messages for processing',
+      );
 
       int processedCount = 0;
       int newTransactions = 0;
@@ -339,7 +345,9 @@ class SmsService {
       print('   - Duplicates skipped: $duplicatesSkipped');
       print('   - Processing time: ${processingTime.inSeconds}s');
 
-      _debugLog('Historical SMS processing completed: $newTransactions new, $duplicatesSkipped duplicates, ${processingTime.inSeconds}s');
+      _debugLog(
+        'Historical SMS processing completed: $newTransactions new, $duplicatesSkipped duplicates, ${processingTime.inSeconds}s',
+      );
 
       _statusController.add({
         'status': 'processing_completed',
@@ -352,7 +360,6 @@ class SmsService {
 
       // Save processed IDs
       await _saveProcessedSmsIds();
-
     } catch (e) {
       print('❌ Error processing historical SMS: $e');
       _debugLog('Historical SMS processing failed: $e');
@@ -378,11 +385,14 @@ class SmsService {
 
       // Filter messages from last 24 hours
       final cutoffDate = DateTime.now().subtract(const Duration(hours: 24));
-      return messages.where((msg) =>
-      msg.date != null &&
-          msg.date!.isAfter(cutoffDate) &&
-          !_processedSmsIds.contains(_generateSmsId(msg))
-      ).toList();
+      return messages
+          .where(
+            (msg) =>
+                msg.date != null &&
+                msg.date!.isAfter(cutoffDate) &&
+                !_processedSmsIds.contains(_generateSmsId(msg)),
+          )
+          .toList();
     } catch (e) {
       print('❌ Error getting recent SMS messages: $e');
       _debugLog('Failed to get recent SMS messages: $e');
@@ -401,9 +411,9 @@ class SmsService {
 
       // Filter messages from last 30 days
       final cutoffDate = DateTime.now().subtract(const Duration(days: 30));
-      return messages.where((msg) =>
-      msg.date != null && msg.date!.isAfter(cutoffDate)
-      ).toList();
+      return messages
+          .where((msg) => msg.date != null && msg.date!.isAfter(cutoffDate))
+          .toList();
     } catch (e) {
       print('❌ Error getting historical SMS messages: $e');
       _debugLog('Failed to get historical SMS messages: $e');
@@ -412,7 +422,10 @@ class SmsService {
   }
 
   // ✅ ENHANCED: Process single SMS with comprehensive validation
-  Future<bool> _processSingleSms(SmsMessage message, {bool isHistorical = false}) async {
+  Future<bool> _processSingleSms(
+    SmsMessage message, {
+    bool isHistorical = false,
+  }) async {
     try {
       final smsId = _generateSmsId(message);
 
@@ -443,7 +456,9 @@ class SmsService {
       final success = await _processTransaction(transaction);
       if (success) {
         _processedSmsIds.add(smsId);
-        _debugLog('Successfully processed transaction: ${transaction.merchant} - ₹${transaction.amount}');
+        _debugLog(
+          'Successfully processed transaction: ${transaction.merchant} - ₹${transaction.amount}',
+        );
       }
 
       return success;
@@ -471,8 +486,8 @@ class SmsService {
 
       if (transaction == null) return false;
 
-      return !existingTransactions.any((existing) =>
-          _areTransactionsSimilar(existing, transaction)
+      return !existingTransactions.any(
+        (existing) => _areTransactionsSimilar(existing, transaction),
       );
     } catch (e) {
       _debugLog('Error checking if transaction is new: $e');
@@ -485,8 +500,8 @@ class SmsService {
     try {
       // Check for duplicates with enhanced similarity checking
       final existingTransactions = await _storage.getTransactions();
-      final isDuplicate = existingTransactions.any((existing) =>
-          _areTransactionsSimilar(existing, transaction)
+      final isDuplicate = existingTransactions.any(
+        (existing) => _areTransactionsSimilar(existing, transaction),
       );
 
       if (isDuplicate) {
@@ -519,7 +534,9 @@ class SmsService {
         await _settings.triggerHaptic(HapticFeedbackType.success);
       }
 
-      print('💾 New transaction processed: ${transaction.merchant} - ₹${transaction.amount}');
+      print(
+        '💾 New transaction processed: ${transaction.merchant} - ₹${transaction.amount}',
+      );
       _debugLog('Transaction saved and processed: ${transaction.id}');
 
       return true;
@@ -534,9 +551,14 @@ class SmsService {
   // ✅ ENHANCED: Advanced transaction similarity checking
   bool _areTransactionsSimilar(Transaction t1, Transaction t2) {
     // Check multiple criteria for similarity
-    final amountMatch = (t1.amount - t2.amount).abs() < 0.01; // Allow small floating point differences
-    final merchantMatch = t1.merchant.toLowerCase().trim() == t2.merchant.toLowerCase().trim();
-    final timeMatch = t1.dateTime.difference(t2.dateTime).abs().inMinutes <= 5; // Allow 5-minute window
+    final amountMatch =
+        (t1.amount - t2.amount).abs() <
+        0.01; // Allow small floating point differences
+    final merchantMatch =
+        t1.merchant.toLowerCase().trim() == t2.merchant.toLowerCase().trim();
+    final timeMatch =
+        t1.dateTime.difference(t2.dateTime).abs().inMinutes <=
+        5; // Allow 5-minute window
     final senderMatch = t1.sender.toLowerCase() == t2.sender.toLowerCase();
 
     return amountMatch && merchantMatch && timeMatch && senderMatch;
@@ -554,27 +576,40 @@ class SmsService {
 
       // Apply filters
       if (startDate != null) {
-        transactions = transactions.where((t) =>
-        t.dateTime.isAfter(startDate) || t.dateTime.isAtSameMomentAs(startDate)
-        ).toList();
+        transactions = transactions
+            .where(
+              (t) =>
+                  t.dateTime.isAfter(startDate) ||
+                  t.dateTime.isAtSameMomentAs(startDate),
+            )
+            .toList();
       }
 
       if (endDate != null) {
-        transactions = transactions.where((t) =>
-        t.dateTime.isBefore(endDate) || t.dateTime.isAtSameMomentAs(endDate)
-        ).toList();
+        transactions = transactions
+            .where(
+              (t) =>
+                  t.dateTime.isBefore(endDate) ||
+                  t.dateTime.isAtSameMomentAs(endDate),
+            )
+            .toList();
       }
 
       if (categoryId != null) {
-        transactions = transactions.where((t) => t.categoryId == categoryId).toList();
+        transactions = transactions
+            .where((t) => t.categoryId == categoryId)
+            .toList();
       }
 
       if (searchQuery != null && searchQuery.isNotEmpty) {
         final query = searchQuery.toLowerCase();
-        transactions = transactions.where((t) =>
-        t.merchant.toLowerCase().contains(query) ||
-            t.originalMessage.toLowerCase().contains(query)
-        ).toList();
+        transactions = transactions
+            .where(
+              (t) =>
+                  t.merchant.toLowerCase().contains(query) ||
+                  t.originalMessage.toLowerCase().contains(query),
+            )
+            .toList();
       }
 
       return transactions;
@@ -588,7 +623,9 @@ class SmsService {
   // ✅ ENHANCED: Watch new transactions with filtering
   Stream<Transaction> watchNewTransactions({String? categoryId}) {
     if (categoryId != null) {
-      return _transactionController.stream.where((t) => t.categoryId == categoryId);
+      return _transactionController.stream.where(
+        (t) => t.categoryId == categoryId,
+      );
     }
     return _transactionController.stream;
   }
@@ -639,7 +676,9 @@ class SmsService {
         'failed_parsing': _failedParsing,
         'duplicates_skipped': _duplicatesSkipped,
         'success_rate': _processedCount > 0
-            ? (_successfulTransactions / _processedCount * 100).toStringAsFixed(1)
+            ? (_successfulTransactions / _processedCount * 100).toStringAsFixed(
+                1,
+              )
             : '0.0',
       },
       'current_state': {
@@ -716,7 +755,9 @@ class SmsService {
         'statistics': getStats(),
       };
 
-      _debugLog('Manual sync completed: $newTransactions new transactions in ${syncTime.inSeconds}s');
+      _debugLog(
+        'Manual sync completed: $newTransactions new transactions in ${syncTime.inSeconds}s',
+      );
       return result;
     } catch (e) {
       _debugLog('Manual sync failed: $e');
@@ -749,8 +790,10 @@ class SmsService {
   double _getMemoryUsage() {
     try {
       // This is a simplified memory usage calculation
-      final pendingSize = _pendingTransactions.length * 0.001; // Approximate KB per transaction
-      final processedIdsSize = _processedSmsIds.length * 0.0001; // Approximate KB per ID
+      final pendingSize =
+          _pendingTransactions.length * 0.001; // Approximate KB per transaction
+      final processedIdsSize =
+          _processedSmsIds.length * 0.0001; // Approximate KB per ID
       return pendingSize + processedIdsSize;
     } catch (e) {
       return 0.0;
@@ -765,7 +808,9 @@ class SmsService {
         : null;
 
     return {
-      'overall_health': _isInitialized && !_isProcessing ? 'healthy' : 'warning',
+      'overall_health': _isInitialized && !_isProcessing
+          ? 'healthy'
+          : 'warning',
       'service_status': {
         'initialized': _isInitialized,
         'monitoring': _isMonitoring,
@@ -773,15 +818,25 @@ class SmsService {
         'last_processed_minutes_ago': lastProcessedAge,
       },
       'watchers_health': {
-        'realtime_watcher': _smsWatcherSubscription != null ? 'active' : 'inactive',
-        'inbox_watcher': _inboxWatcherSubscription != null ? 'active' : 'inactive',
-        'periodic_sync': _periodicSyncTimer?.isActive ?? false ? 'active' : 'inactive',
-        'background_sync': _backgroundSyncTimer?.isActive ?? false ? 'active' : 'inactive',
+        'realtime_watcher': _smsWatcherSubscription != null
+            ? 'active'
+            : 'inactive',
+        'inbox_watcher': _inboxWatcherSubscription != null
+            ? 'active'
+            : 'inactive',
+        'periodic_sync': _periodicSyncTimer?.isActive ?? false
+            ? 'active'
+            : 'inactive',
+        'background_sync': _backgroundSyncTimer?.isActive ?? false
+            ? 'active'
+            : 'inactive',
       },
       'performance_metrics': {
         'pending_transactions': _pendingTransactions.length,
         'success_rate': _processedCount > 0
-            ? (_successfulTransactions / _processedCount * 100).toStringAsFixed(1)
+            ? (_successfulTransactions / _processedCount * 100).toStringAsFixed(
+                1,
+              )
             : '0.0',
         'memory_usage_mb': _getMemoryUsage(),
       },
@@ -806,7 +861,9 @@ class SmsService {
     }
 
     if (_failedParsing > _successfulTransactions * 0.5) {
-      issues.add('High parsing failure rate: ${_failedParsing}/${_processedCount}');
+      issues.add(
+        'High parsing failure rate: ${_failedParsing}/${_processedCount}',
+      );
     }
 
     if (_smsWatcherSubscription == null && _isMonitoring) {
@@ -820,7 +877,9 @@ class SmsService {
     final recommendations = <String>[];
 
     if (_duplicatesSkipped > _successfulTransactions) {
-      recommendations.add('High duplicate rate - consider clearing processed cache');
+      recommendations.add(
+        'High duplicate rate - consider clearing processed cache',
+      );
     }
 
     if (_failedParsing > 10) {
@@ -828,7 +887,9 @@ class SmsService {
     }
 
     if (_pendingTransactions.length > 1000) {
-      recommendations.add('Large number of pending transactions - consider archiving');
+      recommendations.add(
+        'Large number of pending transactions - consider archiving',
+      );
     }
 
     return recommendations;
@@ -872,8 +933,12 @@ class SmsService {
       final transactions = await _storage.getTransactions();
       _pendingTransactions = transactions.take(100).toList();
 
-      _debugLog('Refreshed pending transactions: ${_pendingTransactions.length}');
-      print('🔄 Refreshed pending transactions: ${_pendingTransactions.length}');
+      _debugLog(
+        'Refreshed pending transactions: ${_pendingTransactions.length}',
+      );
+      print(
+        '🔄 Refreshed pending transactions: ${_pendingTransactions.length}',
+      );
     } catch (e) {
       print('❌ Error refreshing pending transactions: $e');
       _debugLog('Failed to refresh pending transactions: $e');
@@ -904,21 +969,20 @@ class SmsService {
           'processing': _isProcessing,
         },
       },
-      {
-        'category': 'Statistics',
-        'data': getStats(),
-      },
-      {
-        'category': 'Health Check',
-        'data': healthCheck,
-      },
+      {'category': 'Statistics', 'data': getStats()},
+      {'category': 'Health Check', 'data': healthCheck},
       {
         'category': 'Recent Transactions',
-        'data': _pendingTransactions.take(5).map((t) => {
-          'merchant': t.merchant,
-          'amount': t.amount,
-          'date': t.dateTime.toIso8601String(),
-        }).toList(),
+        'data': _pendingTransactions
+            .take(5)
+            .map(
+              (t) => {
+                'merchant': t.merchant,
+                'amount': t.amount,
+                'date': t.dateTime.toIso8601String(),
+              },
+            )
+            .toList(),
       },
     ];
   }
@@ -955,7 +1019,10 @@ class SmsService {
         'statistics': getStats(),
         'settings': {
           'auto_categorization': _settings.getBool('auto_categorization', true),
-          'historical_processing': _settings.getBool('historical_sms_processing', true),
+          'historical_processing': _settings.getBool(
+            'historical_sms_processing',
+            true,
+          ),
           'sync_frequency': _settings.getInt('sync_frequency_minutes', 30),
         },
         'processed_sms_count': _processedSmsIds.length,

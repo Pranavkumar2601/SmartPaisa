@@ -21,7 +21,8 @@ class TransactionBarChart extends StatefulWidget {
   State<TransactionBarChart> createState() => _TransactionBarChartState();
 }
 
-class _TransactionBarChartState extends State<TransactionBarChart> with TickerProviderStateMixin {
+class _TransactionBarChartState extends State<TransactionBarChart>
+    with TickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
   Map<String, double> _chartData = {};
@@ -37,7 +38,8 @@ class _TransactionBarChartState extends State<TransactionBarChart> with TickerPr
   @override
   void didUpdateWidget(TransactionBarChart oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.transactions != oldWidget.transactions || widget.period != oldWidget.period) {
+    if (widget.transactions != oldWidget.transactions ||
+        widget.period != oldWidget.period) {
       _calculateChartData();
     }
   }
@@ -160,8 +162,20 @@ class _TransactionBarChartState extends State<TransactionBarChart> with TickerPr
   }
 
   String _getMonthName(int month) {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
     return months[month - 1];
   }
 
@@ -244,7 +258,8 @@ class _TransactionBarChartState extends State<TransactionBarChart> with TickerPr
                     reservedSize: 32,
                     getTitlesWidget: (value, meta) {
                       final entries = _chartData.entries.toList();
-                      if (value.toInt() >= entries.length) return const Text('');
+                      if (value.toInt() >= entries.length)
+                        return const Text('');
 
                       return Padding(
                         padding: const EdgeInsets.only(top: 8),
@@ -252,7 +267,9 @@ class _TransactionBarChartState extends State<TransactionBarChart> with TickerPr
                           entries[value.toInt()].key,
                           style: TextStyle(
                             fontSize: 10,
-                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withOpacity(0.7),
                           ),
                         ),
                       );
@@ -268,14 +285,20 @@ class _TransactionBarChartState extends State<TransactionBarChart> with TickerPr
                         Helpers.formatCurrency(value),
                         style: TextStyle(
                           fontSize: 10,
-                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withOpacity(0.7),
                         ),
                       );
                     },
                   ),
                 ),
-                rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                rightTitles: const AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
+                ),
+                topTitles: const AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
+                ),
               ),
               gridData: FlGridData(
                 show: true,
@@ -283,7 +306,9 @@ class _TransactionBarChartState extends State<TransactionBarChart> with TickerPr
                 horizontalInterval: _maxY / 5,
                 getDrawingHorizontalLine: (value) {
                   return FlLine(
-                    color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.outline.withOpacity(0.2),
                     strokeWidth: 1,
                   );
                 },
@@ -314,10 +339,7 @@ class _TransactionBarChartState extends State<TransactionBarChart> with TickerPr
             ),
           ),
           const SizedBox(height: 16),
-          Text(
-            'No trend data',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
+          Text('No trend data', style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8),
           Text(
             'Make some transactions to see spending trends',
