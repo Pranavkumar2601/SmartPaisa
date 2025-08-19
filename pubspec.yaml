@@ -52,6 +52,9 @@ dependencies:
   json_annotation: ^4.8.1
   json_serializable: ^6.7.1
 
+  # Optional: For additional Syncfusion features
+  syncfusion_flutter_core: ^23.1.44
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
